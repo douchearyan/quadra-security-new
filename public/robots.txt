@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.quadrasecurity.com
+
+# Sitemaps
+Sitemap: https://www.quadrasecurity.com/sitemap.xml
