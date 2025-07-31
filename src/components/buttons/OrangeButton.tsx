@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-const OrangeButton = () => {
+const OrangeButton: React.FC = () => {
   return (
     <motion.button
       className="group flex items-center gap-3 bg-themeOrange text-white p-1 rounded-full relative overflow-hidden"

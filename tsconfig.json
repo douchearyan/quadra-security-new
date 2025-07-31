@@ -31,6 +31,6 @@
     "src/app/blog/[slug]/page.tsx",
     "tailwind.config.js",
     "sanity-project/.sanity/structure.ts"
-, "next-sitemap.config.js"  ],
+, "next-sitemap.config.js", "src/components/buttons/OrangeButton.tsx"  ],
   "exclude": ["node_modules"]
 }

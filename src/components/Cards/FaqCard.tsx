@@ -5,7 +5,12 @@ import { FaPlus, FaMinus } from "react-icons/fa";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 
-const FaqCard = ({ question, answer }) => {
+interface FaqCardProps {
+  question: string;
+  answer: string;
+}
+
+const FaqCard: React.FC<FaqCardProps>  = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
