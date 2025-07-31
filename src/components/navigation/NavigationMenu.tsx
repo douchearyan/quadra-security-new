@@ -3,7 +3,7 @@ import { FaCircle } from "react-icons/fa"; //circle icon in nav bar
 import OrangeButton from "../buttons/OrangeButton";
 import Image from "next/image";
 
-const NavigationMenu = () => {
+const NavigationMenu: React.FC = () => {
   return (
     <div>
       {/* Navigation bar desktop */}
