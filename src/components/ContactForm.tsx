@@ -1,59 +1,56 @@
 "use client";
+
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";;
-import { MdEmail } from "react-icons/md";
-import { FaLocationDot } from "react-icons/fa6";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  // FaYoutube,
-} from "react-icons/fa";
-import HeroBanner from "./ui/hero-banner";
-
 import { toast } from "sonner";
+import { MdEmail } from "react-icons/md";
+import { FaInstagram, FaFacebookF } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
-export default function ContactForm() {
-  const [formData, setFormData] = useState({
+type FormDataType = {
+  name: string;
+  mobile: string;
+  email: string;
+  service: string;
+  address: string;
+  city: string;
+};
+
+const ContactForm = () => {
+  const [formData, setFormData] = useState<FormDataType>({
     name: "",
     mobile: "",
     email: "",
     service: "CCTV Installation",
     address: "",
-    city: "Gurugram",
+    city: "Gurgaon",
   });
 
   const [loading, setLoading] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-    const handleSubmit = async (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-     // Validate required fields and mobile format
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(formData.name.trim())) {
       toast.error("Please enter a valid name (letters and spaces only)");
       return;
-  }
-  const fullMobile = `+91${formData.mobile.trim()}`;
-  const mobileRegex = /^\+91[7-9][0-9]{9}$/;
-  if (!mobileRegex.test(fullMobile)) {
-    toast.error("Please enter a valid 10-digit Indian mobile number.");
-    return;
-  }
-  
-  const payload = { ...formData, mobile: fullMobile };
+    }
+
+    const fullMobile = `+91${formData.mobile.trim()}`;
+    const mobileRegex = /^\+91[7-9][0-9]{9}$/;
+    if (!mobileRegex.test(fullMobile)) {
+      toast.error("Please enter a valid 10-digit Indian mobile number.");
+      return;
+    }
+
+    const payload = { ...formData, mobile: fullMobile };
+
     if (!formData.name.trim()) {
       toast.error("Name is required");
       return;
@@ -62,11 +59,10 @@ export default function ContactForm() {
       toast.error("Mobile number is required");
       return;
     }
-   
-    setLoading(true);
-    
-    try {
 
+    setLoading(true);
+
+    try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,7 +79,7 @@ export default function ContactForm() {
           email: "",
           service: "CCTV Installation",
           address: "",
-          city: "Gurugram",
+          city: "Gurgaon",
         });
       } else {
         toast.error("Something went wrong. Please try again.");
@@ -95,219 +91,196 @@ export default function ContactForm() {
       setLoading(false);
     }
   };
+  const ContactLink = ({
+  icon,
+  text,
+  href,
+}: {
+  icon: JSX.Element;
+  text: string;
+  href?: string;
+}) => (
+  <div className="flex items-center gap-3">
+    {icon}
+    {href ? (
+      <a href={href} target="_blank" className="hover:underline">
+        {text}
+      </a>
+    ) : (
+      <span>{text}</span>
+    )}
+  </div>
+);
+
+const services = [
+  "CCTV Installation",
+  "biometric-systems",
+  "anpr",
+  "epabx-systems",
+  "interactive-display-panels",
+  "video-door-phones",
+  "baggage-scanners",
+  "alarm-systems",
+  "metal-detectors",
+  "access-control-systems",
+  "boom-barriers-toll-solutions",
+  "electronic-door-locks",
+  "Maintenance",
+  "Other",
+];
+
+const cities = ["Gurgaon", "Delhi", "Noida", "DelhiNCR", "Others"];
+
+const InputField = ({
+  label,
+  name,
+  value,
+  onChange,
+  placeholder,
+  isPhone = false,
+}: {
+  label: string;
+  name: string;
+  value: string;
+  onChange: any;
+  placeholder: string;
+  isPhone?: boolean;
+}) => (
+  <div>
+    <label className="text-white text-sm font-semibold">{label}</label>
+    <div className="relative">
+      {isPhone && (
+        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-semibold pointer-events-none">
+          +91
+        </span>
+      )}
+      <input
+        type={isPhone ? "tel" : "text"}
+        name={name}
+        value={value}
+        onChange={onChange}
+        maxLength={isPhone ? 10 : undefined}
+        pattern={isPhone ? "[0-9]{10}" : undefined}
+        placeholder={placeholder}
+        className={`w-full border px-4 py-2 ${isPhone ? "pl-12" : ""} rounded-[0.5rem] bg-[#D9D9D9] text-black  focus:outline-none placeholder-gray-800`}
+      />
+    </div>
+  </div>
+);
+
+const SelectField = ({
+  label,
+  name,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  name: string;
+  value: string;
+  onChange: any;
+  options: string[];
+}) => (
+  <div>
+    <label className="text-white text-sm font-semibold">{label}</label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full h-10 px-3 py-2 rounded-[0.5rem] border border-slate-300 bg-[#D9D9D9] focus:outline-none text-gray-800 placeholder-gray-500"
+    >
+      {options.map((opt) => (
+        <option key={opt} value={opt}>
+          {opt}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+const SubmitButton = ({ loading }: { loading: boolean }) => (
+  <div className="flex justify-center pt-4">
+    <button
+      type="submit"
+      className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 transition"
+      disabled={loading}
+    >
+      {loading ? "Submitting..." : "Submit"}
+    </button>
+  </div>
+);
 
   return (
-    <>
-      <div>
-        <HeroBanner title="Contact Us" />
-      </div>
+    <div className="pt-30">
+      {/* Desktop Layout */}
+      <div className="hidden md:flex border-dotted border-6 border-white border-[#4f4f4f] bg-[#08156B] h-[500px] w-[1000px] mx-auto   rounded-[5rem] overflow-hidden">
+        {/* Left Panel */}
+        <div className="w-1/2 px-14 py-10 text-white flex flex-col gap-4">
+          <h1 className="text-4xl font-bold text-orange-400 leading-tight">
+            Book Your <br /> Service <br /> Today!
+          </h1>
 
-      <div className="min-h-screen bg-inherit flex flex-col justify-center items-center p-6 font-[family-name:var(--font-urbanist)]">
-        <div className="max-w-4xl mt-8 mx-auto px-4 md:px-0 prose prose-lg prose-blue prose-headings:text-[#00246C] prose-headings:font-extrabold prose-headings:mb-4 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6">
-          <p>
-            Get in Touch with Quadra Security We’re here to help you secure what
-            matters most. Whether you have a question about our products,
-            services or need expert advice, our team is ready to assist you.
-            Reach out to us today
-          </p>
-        </div>
-        <div className="max-w-7xl w-full mt-8 bg-white rounded-lg shadow-md flex flex-col md:flex-row overflow-hidden border border-gray-100">
-          {/* Left Panel: Contact Info */}
-          <div className="bg-gradient-to-b from-[#292BA1] to-[#0D0544] text-white w-full md:w-1/3 p-8 space-y-6">
-            <div className="text-white text-sm space-y-6">
-              {/* GET IN TOUCH */}
-              <div>
-                <h2 className="text-2xl font-semibold mb-4 text-white">
-                  GET IN TOUCH
-                </h2>
-                <div className="space-y-5">
-                  <div className="flex items-center gap-3">
-                    <MdEmail className="text-xl text-white" />
-                    <span className="text-white">
-                      <a
-                        href="https://mail.google.com/mail/?view=cm&fs=1&to=accounts@quadrasecurity.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                         accounts@quadrasecurity.com
-                      </a>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <FaLocationDot className="text-xl text-white" />
-                    <span className="text-white">Gurugram, Delhi NCR, Noida</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* SOCIAL LINKS */}
-              <div>
-                <h2 className="text-2xl font-semibold mb-4 text-white">
-                  SOCIAL LINKS
-                </h2>
-                <div className="flex flex-col gap-5 text-white text-sm">
-                  <a
-                    href="https://www.facebook.com/profile.php?id=61577161615068"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:text-gray-300 transition"
-                  >
-                    <FaFacebookF className="text-xl text-white" />
-                    Facebook
-                  </a>
-                  <a
-                    href="https://www.instagram.com/quadra_security?igsh=MWlvb3Q5bTFja2ZmaQ%3D%3D&utm_source=qr"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:text-gray-300 transition"
-                  >
-                    <FaInstagram className="text-xl text-white" />
-                    Instagram
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/company/quadra-security/posts/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:text-gray-300 transition"
-                  >
-                    <FaLinkedinIn className="text-xl text-white" />
-                    LinkedIn
-                  </a>
-                  {/* <a
-                    href="https://www.youtube.com/@QuadraSecurity"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:text-gray-300 transition"
-                  >
-                    <FaYoutube className="text-xl text-white" />
-                    YouTube
-                  </a> */}
-                </div>
-              </div>
+          <div className="space-y-4 text-sm mt-3">
+            <div className="flex items-center gap-3">
+              <MdEmail className="text-lg" />
+              <a href="mailto:quadrasecurity@gmail.com" target="_blank" className="hover:underline">
+                quadrasecurity@gmail.com
+              </a>
+            </div>
+            <div className="flex items-center gap-3">
+              <FaInstagram className="text-lg" />
+              <a href="https://www.instagram.com/quadra_security" target="_blank" className="hover:underline">
+                quadrasecurity Instagram
+              </a>
+            </div>
+            <div className="flex items-center gap-3">
+              <FaFacebookF className="text-lg" />
+              <a href="https://www.facebook.com/profile.php?id=61577161615068" target="_blank" className="hover:underline">
+                quadrasecurity Facebook
+              </a>
+            </div>
+            <div className="flex items-center gap-3">
+              <FaLocationDot className="text-lg" />
+              <span>quadrasecurity address</span>
             </div>
           </div>
+        </div>
 
-          {/* Right Panel: Form */}
-          <div className="w-full md:w-2/3 p-8 bg-white">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Your Name"
-                  required
-                />
-               <div className="relative w-full">
-  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-semibold pointer-events-none">
-    +91
-  </span>
-  <Input
-    type="tel"
-    name="mobile"
-    maxLength={10}
-    pattern="[0-9]{10}"
-    value={formData.mobile}
-    onChange={handleChange}
-    placeholder="Phone number"
-    required
-    className="pl-12"
-  />
-</div>
-
-
-              </div>
-              <Input
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email Address"
-                
-              />
-              <select
-                name="service"
-                value={formData.service}
-                onChange={handleChange}
-                className="w-full h-10 px-3 py-2 rounded-md border border-slate-300 focus:outline-none"
-                required
-              >
-                <option value="CCTV Installation" className="text-black">
-                  CCTV Installation
-                  </option>
-                <option value="biometric-systems" className="text-black">
-                  Biometric Systems
-                </option>
-                <option value="anpr" className="text-black">
-                  ANPR (Automatic Number Plate Recognition)
-                </option>
-                <option value="epabx-systems" className="text-black">
-                  EPABX Systems
-                </option>
-                <option value="interactive-display-panels" className="text-black">
-                  Interactive Display Panels
-                </option>
-                <option value="video-door-phones" className="text-black">
-                  Video Door Phones
-                </option>
-                <option value="baggage-scanners" className="text-black">
-                  Baggage Scanners
-                </option>
-                <option value="alarm-systems" className="text-black">
-                  Alarm Systems
-                </option>
-                <option value="metal-detectors" className="text-black">
-                  Metal Detectors
-                </option>
-                <option value="access-control-systems" className="text-black">
-                  Access Control Systems
-                </option>
-                <option value="boom-barriers-toll-solutions" className="text-black">
-                  Boom Barriers & Toll Solutions
-                </option>
-                <option value="electronic-door-locks" className="text-black">
-                  Electronic Door Locks
-                </option>
-                <option value="Maintenance" className="text-black">
-                  Maintenance
-                </option>
-                <option value="Other" className="text-black">
-                  Other
-                </option>
-              </select>
-              <Textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Enter street address and locality"
-                className="min-h-[100px]"
-                
-              />
-              <select
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="w-full h-10 px-3 py-2 rounded-md border border-slate-300 focus:outline-none"
-                
-              >
-                <option value="Gurugram">Gurugram</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Noida">Noida</option>
-                <option value="DelhiNCR">Delhi-NCR</option>
-                <option value="Others">Others</option>
-                </select>
-               
-                <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#2B388F] hover:bg-[#232743]"
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </Button>
-            </form>
-          </div>
+        {/* Right Panel */}
+        <div className="w-1/2 bg-[#08156B] p-8">
+          <form className="space-y-4 mt-10" onSubmit={handleSubmit}>
+            <InputField label="Name" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your name" />
+            <InputField label="Contact" name="mobile" value={formData.mobile} onChange={handleChange} placeholder="Phone number" isPhone />
+            <SelectField label="Service" name="service" value={formData.service} onChange={handleChange} options={services} />
+            <SelectField label="Area" name="city" value={formData.city} onChange={handleChange} options={cities} />
+            <SubmitButton loading={loading} />
+          </form>
         </div>
       </div>
-    </>
+
+      {/* Mobile Layout */}
+      <div className="md:hidden bg-[#08156B] border-white border-4 border-dashed  px-6 py-8 text-white rounded-[3rem] mt-6 mx-4">
+        <h1 className="text-3xl font-bold text-orange-400 text-center">Book Your Service</h1>
+
+        <div className="grid grid-cols-2  space-y-2 mt-6 text-sm">
+          <ContactLink icon={<MdEmail />} text="quadrasecurity@gmail.com" href="mailto:quadrasecurity@gmail.com" />
+          <ContactLink icon={<FaInstagram />} text="Instagram" href="https://www.instagram.com/quadra_security" />
+          <ContactLink icon={<FaFacebookF />} text="Facebook" href="https://www.facebook.com/profile.php?id=61577161615068" />
+          <ContactLink icon={<FaLocationDot />} text="quadrasecurity address" />
+        </div>
+
+        <form className="space-y-4 mt-6" onSubmit={handleSubmit}>
+          <InputField label="Name" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your name" />
+          <InputField label="Contact" name="mobile" value={formData.mobile} onChange={handleChange} placeholder="Phone number" isPhone />
+          <SelectField label="Service" name="service" value={formData.service} onChange={handleChange} options={services} />
+          <SelectField label="Area" name="city" value={formData.city} onChange={handleChange} options={cities} />
+          <SubmitButton loading={loading} />
+        </form>
+      </div>
+
+    </div>
+      
+  
   );
-}
+};
+export default ContactForm;
